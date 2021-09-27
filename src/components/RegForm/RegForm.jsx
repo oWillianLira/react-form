@@ -1,20 +1,23 @@
 import { useState } from 'react';
 import { Button, FormControlLabel, Switch, TextField } from '@material-ui/core';
 
-export default function RegForm() {
+export default function RegForm(props) {
   const [name, setName] = useState();
   const [lastname, setLastName] = useState();
   const [sin, setSin] = useState();
+  const [promo, setPromo] = useState(true);
+  const [news, setNews] = useState(true);
+  const [errors, setErrors] = useState({ sin: { valid: true, tip: '' } });
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        alert(name + ' ' + lastname + ' ' + sin);
+        props.whenSubmit({ name, lastname, sin, promo, news });
       }}
     >
       <TextField
-        value={name}
+        // value={name}
         onChange={(e) => {
           setName(e.target.value);
         }}
@@ -26,7 +29,7 @@ export default function RegForm() {
       />
 
       <TextField
-        value={lastname}
+        // value={lastname}
         onChange={(e) => {
           setLastName(e.target.value);
         }}
@@ -38,10 +41,16 @@ export default function RegForm() {
       />
 
       <TextField
-        value={sin}
+        // value={sin}
         onChange={(e) => {
           setSin(e.target.value);
         }}
+        onBlur={(e) => {
+          const isValid = props.validateSin(sin);
+          setErrors({ sin: isValid });
+        }}
+        error={!errors.sin.valid}
+        helperText={errors.sin.tip}
         id="sin"
         label="SIN"
         fullWidth
@@ -51,10 +60,33 @@ export default function RegForm() {
 
       <FormControlLabel
         label="Promotions"
-        control={<Switch id="promo" name="promo" defaultChecked color="primary" />}
+        control={
+          <Switch
+            onChange={(e) => {
+              setPromo(e.target.checked);
+            }}
+            id="promo"
+            name="promo"
+            checked={promo}
+            color="primary"
+          />
+        }
       />
 
-      <FormControlLabel label="News" control={<Switch id="news" name="news" defaultChecked color="primary" />} />
+      <FormControlLabel
+        label="News"
+        control={
+          <Switch
+            onChange={(e) => {
+              setNews(e.target.checked);
+            }}
+            id="news"
+            name="news"
+            checked={news}
+            color="primary"
+          />
+        }
+      />
 
       <Button type="submit" variant="contained" color="primary">
         Submit
